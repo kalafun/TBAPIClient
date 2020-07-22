@@ -1,6 +1,5 @@
 # TBAPIClient
 
-[![CI Status](https://img.shields.io/travis/Tomáš Bobko/TBAPIClient.svg?style=flat)](https://travis-ci.org/Tomáš Bobko/TBAPIClient)
 [![Version](https://img.shields.io/cocoapods/v/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
 [![License](https://img.shields.io/cocoapods/l/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
 [![Platform](https://img.shields.io/cocoapods/p/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
