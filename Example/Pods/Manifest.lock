@@ -1,0 +1,27 @@
+PODS:
+  - Nimble (7.3.4)
+  - Quick (1.2.0)
+  - TBAPIClient (0.1.0)
+
+DEPENDENCIES:
+  - Nimble (~> 7.0)
+  - Quick (~> 1.2.0)
+  - TBAPIClient (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Nimble
+    - Quick
+
+EXTERNAL SOURCES:
+  TBAPIClient:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Nimble: 051e3d8912d40138fa5591c78594f95fb172af37
+  Quick: 58d203b1c5e27fff7229c4c1ae445ad7069a7a08
+  TBAPIClient: eb0050bc2cf8c83408c1f6c83b45bfe5848f35f2
+
+PODFILE CHECKSUM: b0a6b5293c2c307d07f863ec6b1c326ba1ce371f
+
+COCOAPODS: 1.8.4

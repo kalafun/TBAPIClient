@@ -1,0 +1,22 @@
+{
+  "name": "TBAPIClient",
+  "version": "0.1.0",
+  "summary": "A short description of TBAPIClient.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/Tomáš Bobko/TBAPIClient",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "Tomáš Bobko": "kalafun@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/Tomáš Bobko/TBAPIClient.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "TBAPIClient/Classes/**/*"
+}

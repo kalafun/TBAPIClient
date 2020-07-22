@@ -1,0 +1,6 @@
+framework module Pods_TBAPIClient_Tests {
+  umbrella header "Pods-TBAPIClient_Tests-umbrella.h"
+
+  export *
+  module * { export * }
+}
