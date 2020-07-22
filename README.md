@@ -1,4 +1,4 @@
-# TBAPIClient
+# TBAPIClient - Lightweight Swift Api Client
 
 [![Version](https://img.shields.io/cocoapods/v/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
 [![License](https://img.shields.io/cocoapods/l/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
