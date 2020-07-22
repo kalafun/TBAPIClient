@@ -6,7 +6,35 @@
 
 ## Example
 
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
+```swift
+struct GetCustomersResponse: Decodable {
+    let customers: [Customer]
+}
+
+struct Customer: Decodable {
+    let id: String
+    let name: String
+    let age: Int
+    let address: String
+}
+
+struct GetCustomersCall: Call {
+    typealias ReturnType = GetCustomersResponse
+    var path: String { "/api/getCustomers" }
+    var method: CallMethod = .get
+}
+
+...
+// somewhere in the code
+APIClient.shared.start(GetCustomersCall(), baseURL: baseUrl) { getCustomersResult in
+    switch getCustomersResult {
+        case .success(let result):
+        // result handling
+        case .failure(let error):
+        // error handling
+    }
+}
+```
 
 ## Requirements
 
@@ -21,7 +49,7 @@ pod 'TBAPIClient'
 
 ## Author
 
-Tomáš Bobko, kalafun@gmail.com
+Tomáš Bobko, kalafun@gmail.com
 
 ## License
 
