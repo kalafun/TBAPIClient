@@ -1,8 +1,10 @@
-# TBAPIClient - Lightweight Swift Api Client
+# TBAPIClient - Lightweight REST API Client written in Swift
 
 [![Version](https://img.shields.io/cocoapods/v/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
 [![License](https://img.shields.io/cocoapods/l/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
 [![Platform](https://img.shields.io/cocoapods/p/TBAPIClient.svg?style=flat)](https://cocoapods.org/pods/TBAPIClient)
+
+The idea is that you just define the data model you know you will receive the data as. Then create another structure conforming to the `Call` protocol and implement all variables and functions to your needs. Then you just call the `APIClient.shared.start()` function with your `struct` and the `baseURL` and you handle the response in the closure.
 
 ## Example
 
