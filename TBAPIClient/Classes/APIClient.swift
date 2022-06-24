@@ -30,12 +30,11 @@ public class APIClient {
             return
         }
 
+        // ADD QueryParameters
         var urlComponents = URLComponents(string: stringNonPercentEncoding)
-
-        if let parameters = call.parameters {
+        if let parameters = call.queryParameters {
             urlComponents?.queryItems = parameters.compactMap({ URLQueryItem(name: $0.key, value: $0.value )})
         }
-
         guard let url = urlComponents?.url else {
             DispatchQueue.main.async {
                 #if DEBUG
@@ -49,15 +48,36 @@ public class APIClient {
         var request = URLRequest(url: url)
         request.httpMethod = call.method.rawValue
 
+        #if DEBUG
+        print("REQUEST>>>\n\(request.description)")
+        #endif
+
+        // Add Headers
         if let headers = call.headers {
             headers.forEach({
                 request.addValue($0.value, forHTTPHeaderField: $0.key)
             })
         }
-
         #if DEBUG
-        print("REQUEST>>>\n\(request.url?.absoluteString ?? "")")
+        print("HEADERS>>>\n\(request.allHTTPHeaderFields?.description ?? "")")
         #endif
+
+        // Add Body
+        if let body = call.body {
+            do {
+                let httpBody = try JSONEncoder().encode(body)
+                request.httpBody = httpBody
+                #if DEBUG
+                print("BODY>>>\n\(String(data: httpBody, encoding: String.Encoding.utf8)! as NSString)")
+                #endif
+            } catch {
+                result(.failure(error))
+            }
+        } else {
+            #if DEBUG
+            print("BODY>>>\n EMPTY")
+            #endif
+        }
 
         session.dataTask(with: request) { data, urlResponse, error in
             if let error = error {
@@ -78,6 +98,24 @@ public class APIClient {
                     result(.failure(APIClientError.responseDataNil))
                 }
                 return
+            }
+
+            if let httpURLResponse = urlResponse as? HTTPURLResponse {
+                let code = httpURLResponse.statusCode
+                print("STATUS CODE>>>\n\(code)")
+                print("HEADERS>>>\n\(httpURLResponse.allHeaderFields)")
+
+                if code >= 300 && code < 600 {
+                    do {
+                        let errorMessage = try call.parseErrorMessage(from: data)
+                        let nsError = NSError(domain: "", code: code, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+                        result(.failure(nsError))
+                        return
+                    } catch {
+                        result(.failure(error))
+                        return
+                    }
+                }
             }
 
             print("RESPONSE>>>\n" + String(data: data, encoding: String.Encoding.utf8)! as NSString)

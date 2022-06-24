@@ -10,28 +10,36 @@ public protocol Call: AnyObject {
     typealias Parameters = [String: String]
 
     associatedtype ReturnType: Any, Decodable
+    associatedtype BodyType: Any, Encodable
 
     var path: String { get }
     var offlineData: Data? { get }
     var method: CallMethod { get }
-    var parameters: Parameters? { get }
+    var queryParameters: Parameters? { get }
     var customDateFormatter: DateFormatter? { get }
     var headers: [String: String]? { get }
+    var body: BodyType? { get }
 
     func parse(data: Data) throws -> ReturnType
+    func parseErrorMessage(from data: Data) throws -> String
 }
 
 public enum CallMethod: String {
     case get = "GET"
     case post = "POST"
+    case put = "PUT"
+    case delete = "DELETE"
 }
 
 public extension Call {
 
     var offlineData: Data? { nil }
-    var parameters: Parameters? { nil }
-    var headers: [String: String]? { nil }
+    var queryParameters: Parameters? { nil }
+    var headers: [String: String]? {
+        ["Content-Type": "application/json"]
+    }
     var customDateFormatter: DateFormatter? { nil }
+    var body: BodyType? { nil }
 
     func parse(data: Data) throws -> ReturnType {
         let decoder = JSONDecoder()
