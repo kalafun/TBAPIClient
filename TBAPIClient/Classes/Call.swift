@@ -17,11 +17,12 @@ public protocol Call: AnyObject {
     var method: CallMethod { get }
     var queryParameters: Parameters? { get }
     var customDateFormatter: DateFormatter? { get }
-    var headers: [String: String]? { get }
+    var headers: [String: String] { get }
     var body: BodyType? { get }
 
     func parse(data: Data) throws -> ReturnType
     func parseErrorMessage(from data: Data) throws -> String
+    func handleRefreshToken(completion: @escaping (Error?) -> Void)
 }
 
 public enum CallMethod: String {
@@ -35,9 +36,7 @@ public extension Call {
 
     var offlineData: Data? { nil }
     var queryParameters: Parameters? { nil }
-    var headers: [String: String]? {
-        ["Content-Type": "application/json"]
-    }
+    var headers: [String: String] { [:] }
     var customDateFormatter: DateFormatter? { nil }
     var body: BodyType? { nil }
 

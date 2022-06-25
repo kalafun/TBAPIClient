@@ -17,9 +17,9 @@ enum APIClientError: Error {
 public class APIClient {
 
     private let session = URLSession(configuration: .default)
-
+    private var refreshTokenRetry = 0
     public static let shared = APIClient()
-    private init() { }
+    private init() {}
 
     public func start<C: Call>(call: C, baseURL: URL, result: @escaping (Result<C.ReturnType, Error>) -> Void) {
 
@@ -53,11 +53,10 @@ public class APIClient {
         #endif
 
         // Add Headers
-        if let headers = call.headers {
-            headers.forEach({
-                request.addValue($0.value, forHTTPHeaderField: $0.key)
-            })
-        }
+        call.headers.forEach({
+            request.addValue($0.value, forHTTPHeaderField: $0.key)
+        })
+
         #if DEBUG
         print("HEADERS>>>\n\(request.allHTTPHeaderFields?.description ?? "")")
         #endif
@@ -101,20 +100,34 @@ public class APIClient {
             }
 
             if let httpURLResponse = urlResponse as? HTTPURLResponse {
-                let code = httpURLResponse.statusCode
-                print("STATUS CODE>>>\n\(code)")
+                let statusCode = httpURLResponse.statusCode
+                print("STATUS CODE>>>\n\(statusCode)")
                 print("HEADERS>>>\n\(httpURLResponse.allHeaderFields)")
 
-                if code >= 300 && code < 600 {
-                    do {
-                        let errorMessage = try call.parseErrorMessage(from: data)
-                        let nsError = NSError(domain: "", code: code, userInfo: [NSLocalizedDescriptionKey: errorMessage])
-                        result(.failure(nsError))
-                        return
-                    } catch {
-                        result(.failure(error))
-                        return
+                // Handle status code errors
+                if statusCode >= 300 && statusCode < 600 {
+                    if statusCode == 401 {
+                        if self.refreshTokenRetry > 0 {
+                        } else {
+                            self.refreshTokenRetry += 1
+                            call.handleRefreshToken { error in
+                                if error != nil {
+                                    let handledError = self.handleError(for: call, from: data, statusCode: statusCode)
+                                    result(.failure(handledError))
+                                    return
+                                }
+
+                                self.refreshTokenRetry = 0
+                                self.start(call: call, baseURL: baseURL, result: result)
+                                return
+                            }
+                            return
+                        }
                     }
+
+                    let handledError = self.handleError(for: call, from: data, statusCode: statusCode)
+                    result(.failure(handledError))
+                    return
                 }
             }
 
@@ -135,5 +148,14 @@ public class APIClient {
                 return
             }
         }.resume()
+    }
+
+    private func handleError<C: Call>(for call: C, from data: Data, statusCode: Int) -> Error {
+        do {
+            let errorMessage = try call.parseErrorMessage(from: data)
+            return NSError(domain: "", code: statusCode, userInfo: [NSLocalizedDescriptionKey: errorMessage])
+        } catch {
+            return error
+        }
     }
 }
