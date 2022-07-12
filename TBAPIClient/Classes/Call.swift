@@ -21,6 +21,7 @@ public protocol Call: AnyObject {
     var body: BodyType? { get }
 
     func parse(data: Data) throws -> ReturnType
+    func encodeBody() throws -> Data
     func parseErrorMessage(from data: Data) throws -> String
     func handleRefreshToken(completion: @escaping (Error?) -> Void)
 }
@@ -40,18 +41,37 @@ public extension Call {
     var customDateFormatter: DateFormatter? { nil }
     var body: BodyType? { nil }
 
+    func encodeBody() throws -> Data {
+        let encoder = JSONEncoder()
+
+        if customDateFormatter != nil {
+            setDateEncodingStrategy(for: encoder)
+        }
+
+        let httpBody = try encoder.encode(body)
+        return httpBody
+    }
+
     func parse(data: Data) throws -> ReturnType {
         let decoder = JSONDecoder()
 
         if customDateFormatter != nil {
-            setDecodingStrategy(for: decoder)
+            setDateDecodingStrategy(for: decoder)
         }
 
         let objects: ReturnType = try decoder.decode(ReturnType.self, from: data)
         return objects
     }
 
-    private func setDecodingStrategy(for decoder: JSONDecoder) {
+    private func setDateEncodingStrategy(for encoder: JSONEncoder) {
+        encoder.dateEncodingStrategy = .custom({ [weak self] date, encoder in
+            let stringDate = self?.customDateFormatter?.string(from: date)
+            var container = encoder.singleValueContainer()
+            try container.encode(stringDate)
+        })
+    }
+
+    private func setDateDecodingStrategy(for decoder: JSONDecoder) {
         decoder.dateDecodingStrategy = .custom({ [weak self] decoder -> Date in
             let container = try decoder.singleValueContainer()
             let dateString = try container.decode(String.self)

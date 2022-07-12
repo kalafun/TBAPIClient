@@ -62,9 +62,9 @@ public class APIClient {
         #endif
 
         // Add Body
-        if let body = call.body {
+        if let _ = call.body {
             do {
-                let httpBody = try JSONEncoder().encode(body)
+                let httpBody = try call.encodeBody()
                 request.httpBody = httpBody
                 #if DEBUG
                 print("BODY>>>\n\(String(data: httpBody, encoding: String.Encoding.utf8)! as NSString)")
