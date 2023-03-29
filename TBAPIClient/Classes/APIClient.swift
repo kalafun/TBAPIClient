@@ -44,12 +44,12 @@ public class APIClient {
             }
             return
         }
-
+	
         var request = URLRequest(url: url)
         request.httpMethod = call.method.rawValue
 
         #if DEBUG
-        print("REQUEST>>>\n\(request.description)")
+        print("REQUEST>>>\n\(request.httpMethod ?? "") \(request.description)")
         #endif
 
         // Add Headers
@@ -70,7 +70,9 @@ public class APIClient {
                 print("BODY>>>\n\(String(data: httpBody, encoding: String.Encoding.utf8)! as NSString)")
                 #endif
             } catch {
-                result(.failure(error))
+                DispatchQueue.main.async {
+                    result(.failure(error))
+                }
             }
         } else {
             #if DEBUG
@@ -113,7 +115,9 @@ public class APIClient {
                             call.handleRefreshToken { error in
                                 if error != nil {
                                     let handledError = self.handleError(for: call, from: data, statusCode: statusCode)
-                                    result(.failure(handledError))
+                                    DispatchQueue.main.async {
+                                        result(.failure(handledError))
+                                    }
                                     return
                                 }
 
@@ -126,7 +130,9 @@ public class APIClient {
                     }
 
                     let handledError = self.handleError(for: call, from: data, statusCode: statusCode)
-                    result(.failure(handledError))
+                    DispatchQueue.main.async {
+                        result(.failure(handledError))
+                    }
                     return
                 }
             }
