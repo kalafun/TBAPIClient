@@ -19,6 +19,7 @@ public protocol Call: AnyObject {
     var customDateFormatter: DateFormatter? { get }
     var headers: [String: String] { get }
     var body: BodyType? { get }
+    var isRefreshTokenCall: Bool { get }
 
     func parse(data: Data) throws -> ReturnType
     func encodeBody() throws -> Data
@@ -40,6 +41,7 @@ public extension Call {
     var headers: [String: String] { [:] }
     var customDateFormatter: DateFormatter? { nil }
     var body: BodyType? { nil }
+    var isRefreshTokenCall: Bool { false }
 
     func encodeBody() throws -> Data {
         let encoder = JSONEncoder()
