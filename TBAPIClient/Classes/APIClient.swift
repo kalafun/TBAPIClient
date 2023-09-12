@@ -113,7 +113,7 @@ public class APIClient {
     }
 
     @available(iOS 15.0, *)
-    func start<C: Call>(call: C, baseURL: URL) async -> Result<C.ReturnType, Error> {
+    public func start<C: Call>(call: C, baseURL: URL) async -> Result<C.ReturnType, Error> {
         var url: URL
         var request: URLRequest
 
